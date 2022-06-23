@@ -1,0 +1,29 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "/Users/why/Desktop/go/go-air-example/grpc/main.go",
+            "env": {},
+            "args": [
+                // "-env", "online",
+                // "-job", "registry",
+                // "-job", "grpc-cmux",
+                // "-job", "grpc-h2c",
+            ],
+            "dlvLoadConfig": {
+                "followPointers": true,
+                "maxVariableRecurse": 1,
+                "maxStringLen": 1024, //字符串最大长度
+                "maxArrayValues": 64,
+                "maxStructFields": -1
+            }
+        }
+    ]
+}
