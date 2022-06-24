@@ -3,7 +3,7 @@ module github.com/air-go/go-air-example
 go 1.16
 
 require (
-	github.com/air-go/rpc v1.0.0 // indirect
+	github.com/air-go/rpc v1.0.1 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect

@@ -9,7 +9,7 @@ import (
 	"github.com/air-go/rpc/bootstrap"
 	client "github.com/air-go/rpc/client/grpc"
 	serverGRPC "github.com/air-go/rpc/server/grpc"
-	serverH2C "github.com/air-go/rpc/server/grpc/h2c"
+	h2c "github.com/air-go/rpc/server/grpc/h2c"
 	"google.golang.org/grpc"
 
 	pb "github.com/air-go/go-air-example/grpc/helloworld"
@@ -29,13 +29,15 @@ func RegisterServer(s *grpc.Server) {
 	pb.RegisterGreeterServer(s, &Server{})
 }
 
-func NewService() serverGRPC.Register {
-	return serverGRPC.NewRegister(RegisterServer, pb.RegisterGreeterHandlerFromEndpoint)
-}
-
 func main() {
 	go func() {
-		srv := serverH2C.NewH2C(endpoint, []serverGRPC.Register{NewService()})
+		ctx := context.Background()
+		h, err := serverGRPC.RegisterGateway(ctx, endpoint, []serverGRPC.RegisterMux{pb.RegisterGreeterHandlerFromEndpoint})
+		if err != nil {
+			panic(err)
+		}
+
+		srv := h2c.NewH2C(ctx, endpoint, []serverGRPC.RegisterGRPC{RegisterServer}, h2c.WithHTTPHandler(h))
 		if err := bootstrap.NewApp(srv).Start(); err != nil {
 			log.Println(err)
 			return

@@ -21,3 +21,4 @@ cover.txt
 .apollo_config
 go.work
 *.log
+.vscode/*
