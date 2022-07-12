@@ -12,6 +12,7 @@ import (
 	client "github.com/air-go/rpc/client/http"
 	"github.com/air-go/rpc/client/http/transport"
 	"github.com/air-go/rpc/library/logger/zap"
+	"github.com/air-go/rpc/library/servicer/load"
 	"github.com/air-go/rpc/library/servicer/service"
 	httpServer "github.com/air-go/rpc/server/http"
 	logMiddleware "github.com/air-go/rpc/server/http/middleware/log"
@@ -57,7 +58,7 @@ type Response struct {
 
 func call() {
 	var err error
-	if err = service.LoadService(&service.Config{
+	if err = load.LoadService(&service.Config{
 		ServiceName: serviceName,
 		Type:        2,
 		Host:        "127.0.0.1",

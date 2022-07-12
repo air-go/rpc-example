@@ -26,7 +26,7 @@ import (
 	"github.com/air-go/rpc/library/queue/rabbitmq"
 	"github.com/air-go/rpc/library/redis"
 	etcdRegistry "github.com/air-go/rpc/library/registry/etcd"
-	"github.com/air-go/rpc/library/servicer/service"
+	"github.com/air-go/rpc/library/servicer/load"
 	"github.com/air-go/rpc/server"
 )
 
@@ -66,7 +66,7 @@ func Load() (err error) {
 	if err = loadRegistry(); err != nil {
 		return
 	}
-	if err = service.LoadGlobPattern("services", "toml", resource.Etcd); err != nil {
+	if err = load.LoadGlobPattern("services", "toml", resource.Etcd); err != nil {
 		return
 	}
 
@@ -192,7 +192,7 @@ func loadEtcd() (err error) {
 	}
 
 	if resource.Etcd, err = etcd.NewClient(
-		etcd.WithEndpoints(strings.Split(cfg.Endpoints, ";")),
+		strings.Split(cfg.Endpoints, ";"),
 		etcd.WithDialTimeout(cfg.DialTimeout),
 	); err != nil {
 		return
