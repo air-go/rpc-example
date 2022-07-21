@@ -14,15 +14,17 @@ import (
 	redisCache "github.com/air-go/rpc/library/cache/redis"
 	"github.com/air-go/rpc/library/config"
 	"github.com/air-go/rpc/library/etcd"
-	"github.com/air-go/rpc/library/jaeger"
-	jaegerGorm "github.com/air-go/rpc/library/jaeger/gorm"
-	jaegerRedis "github.com/air-go/rpc/library/jaeger/redis"
 	redisLock "github.com/air-go/rpc/library/lock/redis"
 	loggerGorm "github.com/air-go/rpc/library/logger/zap/gorm"
 	loggerRedis "github.com/air-go/rpc/library/logger/zap/redis"
 	loggerRPC "github.com/air-go/rpc/library/logger/zap/rpc"
 	serviceLogger "github.com/air-go/rpc/library/logger/zap/service"
+	"github.com/air-go/rpc/library/opentracing"
 	"github.com/air-go/rpc/library/orm"
+	"github.com/air-go/rpc/library/otel"
+	otelJaeger "github.com/air-go/rpc/library/otel/exporters/jaeger"
+	otelGorm "github.com/air-go/rpc/library/otel/gorm"
+	otelRedis "github.com/air-go/rpc/library/otel/redis"
 	"github.com/air-go/rpc/library/queue/rabbitmq"
 	"github.com/air-go/rpc/library/redis"
 	etcdRegistry "github.com/air-go/rpc/library/registry/etcd"
@@ -43,12 +45,15 @@ func Load() (err error) {
 		return
 	}
 	if err = loadMysql("test_mysql"); err != nil {
-		return
+		// return
 	}
 	if err = loadRedis("default_redis"); err != nil {
 		return
 	}
 	if err = loadJaeger(); err != nil {
+		return
+	}
+	if err = loadOpentelemetry(); err != nil {
 		return
 	}
 	if err = loadLock(); err != nil {
@@ -109,7 +114,8 @@ func loadMysql(db string) (err error) {
 	server.RegisterCloseFunc(logger.Close())
 
 	if resource.TestDB, err = orm.NewOrm(cfg,
-		orm.WithTrace(jaegerGorm.GormTrace),
+		// orm.WithTrace(jaegerGorm.GormTrace),
+		orm.WithTrace(otelGorm.NewOpentelemetryPlugin()),
 		orm.WithLogger(logger),
 	); err != nil {
 		return
@@ -140,7 +146,8 @@ func loadRedis(db string) (err error) {
 	server.RegisterCloseFunc(logger.Close())
 
 	rc := redis.NewClient(cfg)
-	rc.AddHook(jaegerRedis.NewJaegerHook())
+	// rc.AddHook(jaegerRedis.NewJaegerHook())
+	rc.AddHook(otelRedis.NewOpentelemetryHook())
 	rc.AddHook(logger)
 	resource.RedisDefault = rc
 
@@ -171,16 +178,33 @@ func loadCache() (err error) {
 }
 
 func loadJaeger() (err error) {
-	cfg := &jaeger.Config{}
+	cfg := &opentracing.Config{}
 
 	if err = config.ReadConfig("jaeger", "toml", cfg); err != nil {
 		return
 	}
 
-	if _, _, err = jaeger.NewJaegerTracer(cfg, app.Name()); err != nil {
+	if _, _, err = opentracing.NewJaegerTracer(cfg, app.Name()); err != nil {
 		return
 	}
 
+	return
+}
+
+func loadOpentelemetry() (err error) {
+	cfg := &otelJaeger.JaegerConfig{}
+
+	if err = config.ReadConfig("jaeger", "toml", cfg); err != nil {
+		return
+	}
+
+	a, err := otelJaeger.NewJaeger(cfg)
+	if err != nil {
+		return
+	}
+	if err = otel.NewTracer(app.Name(), a.Exporter, otel.WithSampler(a.Sampler)); err != nil {
+		return
+	}
 	return
 }
 
@@ -238,7 +262,8 @@ func loadClientHTTP() (err error) {
 
 	resource.ClientHTTP = transport.New(
 		transport.WithLogger(logger),
-		transport.WithBeforePlugins(&httpClient.JaegerBeforePlugin{}))
+		// transport.WithBeforePlugins(&httpClient.OpentracingBeforePlugin{}),
+		transport.WithBeforePlugins(&httpClient.OpentelemetryOpentracingBeforePlugin{}))
 	if err != nil {
 		return
 	}

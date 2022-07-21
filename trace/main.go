@@ -16,6 +16,7 @@ import (
 	logMiddleware "github.com/air-go/rpc/server/http/middleware/log"
 	panicMiddleware "github.com/air-go/rpc/server/http/middleware/panic"
 	timeoutMiddleware "github.com/air-go/rpc/server/http/middleware/timeout"
+	traceMiddleware "github.com/air-go/rpc/server/http/middleware/trace"
 )
 
 var (
@@ -47,6 +48,8 @@ func main() {
 		httpServer.WithMiddleware(
 			panicMiddleware.ThrowPanic(resource.ServiceLogger),
 			timeoutMiddleware.TimeoutMiddleware(app.ContextTimeout()),
+			// traceMiddleware.OpentracingMiddleware(),
+			traceMiddleware.OpentelemetryMiddleware(),
 			logMiddleware.LoggerMiddleware(resource.ServiceLogger),
 		),
 		httpServer.WithPprof(app.Pprof()),

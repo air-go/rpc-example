@@ -1,2 +1,5 @@
 Host = "127.0.0.1"
 Port = "6831"
+SamplingServerURL = ""
+SamplingRefreshInterval = 1
+SamplerProportion = 1
