@@ -145,7 +145,10 @@ func loadRedis(db string) (err error) {
 	}
 	server.RegisterCloseFunc(logger.Close())
 
-	rc := redis.NewClient(cfg)
+	rc, err := redis.NewRedisClient(cfg)
+	if err != nil {
+		return
+	}
 	// rc.AddHook(jaegerRedis.NewJaegerHook())
 	rc.AddHook(otelRedis.NewOpentelemetryHook())
 	rc.AddHook(logger)
