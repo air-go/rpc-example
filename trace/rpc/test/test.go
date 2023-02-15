@@ -2,8 +2,8 @@ package test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"net/url"
 
 	jsonCodec "github.com/why444216978/codec/json"
 
@@ -17,19 +17,23 @@ const (
 )
 
 func RPC(ctx context.Context) (resp *httpClient.Response, err error) {
-	req := httpClient.Request{
-		URI:    fmt.Sprintf("/test/rpc1?logid=%s", logger.ValueLogID(ctx)),
-		Method: http.MethodPost,
-		Header: nil,
-		Body:   map[string]interface{}{"rpc": "rpc"},
-		Codec:  jsonCodec.JSONCodec{},
+	q := url.Values{}
+	q.Add("logid", logger.ValueLogID(ctx))
+	req := &httpClient.DefaultRequest{
+		ServiceName: serviceName,
+		Path:        "/test/rpc1",
+		Query:       q,
+		Method:      http.MethodPost,
+		Header:      nil,
+		Body:        map[string]interface{}{"rpc": "rpc"},
+		Codec:       jsonCodec.JSONCodec{},
 	}
 	resp = &httpClient.Response{
 		Body:  new(map[string]interface{}),
 		Codec: jsonCodec.JSONCodec{},
 	}
 
-	if err = resource.ClientHTTP.Send(ctx, serviceName, req, resp); err != nil {
+	if err = resource.ClientHTTP.Send(ctx, req, resp); err != nil {
 		return
 	}
 
@@ -37,12 +41,16 @@ func RPC(ctx context.Context) (resp *httpClient.Response, err error) {
 }
 
 func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
-	req := httpClient.Request{
-		URI:    fmt.Sprintf("/test/conn?logid=%s", logger.ValueLogID(ctx)),
-		Method: http.MethodPost,
-		Header: nil,
-		Body:   map[string]interface{}{"rpc1": "rpc1"},
-		Codec:  jsonCodec.JSONCodec{},
+	q := url.Values{}
+	q.Add("logid", logger.ValueLogID(ctx))
+	req := &httpClient.DefaultRequest{
+		ServiceName: serviceName,
+		Path:        "/test/conn",
+		Query:       q,
+		Method:      http.MethodPost,
+		Header:      nil,
+		Body:        map[string]interface{}{"rpc1": "rpc1"},
+		Codec:       jsonCodec.JSONCodec{},
 	}
 
 	resp = &httpClient.Response{
@@ -50,7 +58,7 @@ func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
 		Codec: jsonCodec.JSONCodec{},
 	}
 
-	if err = resource.ClientHTTP.Send(ctx, serviceName, req, resp); err != nil {
+	if err = resource.ClientHTTP.Send(ctx, req, resp); err != nil {
 		return
 	}
 
@@ -58,12 +66,16 @@ func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
 }
 
 func Ping(ctx context.Context) (resp *httpClient.Response, err error) {
-	req := httpClient.Request{
-		URI:    fmt.Sprintf("/ping?logid=%s", logger.ValueLogID(ctx)),
-		Method: http.MethodGet,
-		Header: nil,
-		Body:   map[string]interface{}{"rpc1": "rpc1"},
-		Codec:  jsonCodec.JSONCodec{},
+	q := url.Values{}
+	q.Add("logid", logger.ValueLogID(ctx))
+	req := &httpClient.DefaultRequest{
+		ServiceName: serviceName,
+		Path:        "/ping",
+		Query:       q,
+		Method:      http.MethodGet,
+		Header:      nil,
+		Body:        map[string]interface{}{"rpc1": "rpc1"},
+		Codec:       jsonCodec.JSONCodec{},
 	}
 
 	resp = &httpClient.Response{
@@ -71,7 +83,7 @@ func Ping(ctx context.Context) (resp *httpClient.Response, err error) {
 		Codec: jsonCodec.JSONCodec{},
 	}
 
-	if err = resource.ClientHTTP.Send(ctx, serviceName, req, resp); err != nil {
+	if err = resource.ClientHTTP.Send(ctx, req, resp); err != nil {
 		return
 	}
 
