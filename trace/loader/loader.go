@@ -45,7 +45,7 @@ func Load() (err error) {
 		return
 	}
 	if err = loadMysql("test_mysql"); err != nil {
-		// return
+		return
 	}
 	if err = loadRedis("default_redis"); err != nil {
 		return
