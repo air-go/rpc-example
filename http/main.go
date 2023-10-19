@@ -77,10 +77,15 @@ func call() {
 			Body:  new(map[string]interface{}),
 			Codec: jsonCodec.JSONCodec{},
 		}
-		if err = cli.Send(context.TODO(), "test", client.Request{
-			URI:    uri,
-			Method: http.MethodGet,
-			Codec:  jsonCodec.JSONCodec{},
+
+		h := http.Header{}
+		h.Set("Content-Type", "application/json")
+		if err = cli.Send(context.TODO(), &client.DefaultRequest{
+			ServiceName: "test",
+			Path:        uri,
+			Method:      http.MethodGet,
+			Codec:       jsonCodec.JSONCodec{},
+			Header:      h,
 		}, resp); err != nil {
 			log.Fatal(err)
 		}
