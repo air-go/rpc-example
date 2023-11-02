@@ -266,7 +266,7 @@ func loadClientHTTP() (err error) {
 	resource.ClientHTTP = transport.New(
 		transport.WithLogger(logger),
 		// transport.WithBeforePlugins(&httpClient.OpentracingBeforePlugin{}),
-		transport.WithBeforePlugins(&httpClient.OpentelemetryOpentracingBeforePlugin{}))
+		transport.WithBeforePlugins(&httpClient.OpentelemetryBeforePlugin{}))
 	if err != nil {
 		return
 	}

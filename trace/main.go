@@ -8,7 +8,7 @@ import (
 	"github.com/air-go/rpc/bootstrap"
 	"github.com/air-go/rpc/library/app"
 	jobLib "github.com/air-go/rpc/library/job"
-	"github.com/air-go/rpc/library/prometheus"
+	httpPrometheus "github.com/air-go/rpc/library/prometheus/http"
 	httpServer "github.com/air-go/rpc/server/http"
 	logMiddleware "github.com/air-go/rpc/server/http/middleware/log"
 	panicMiddleware "github.com/air-go/rpc/server/http/middleware/panic"
@@ -50,7 +50,7 @@ func main() {
 			// traceMiddleware.OpentracingMiddleware(),
 			traceMiddleware.OpentelemetryMiddleware(),
 			logMiddleware.LoggerMiddleware(resource.ServiceLogger),
-			prometheus.HTTPMetricsMiddleware(),
+			httpPrometheus.HTTPMetricsMiddleware(),
 		),
 		httpServer.WithPprof(app.Pprof()),
 		httpServer.WithDebug(app.Debug()),
