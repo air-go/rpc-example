@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/air-go/rpc/bootstrap"
 	client "github.com/air-go/rpc/client/http"
 	"github.com/air-go/rpc/client/http/transport"
+	"github.com/air-go/rpc/library/logger"
 	"github.com/air-go/rpc/library/logger/zap"
 	"github.com/air-go/rpc/library/servicer/load"
 	"github.com/air-go/rpc/library/servicer/service"
@@ -69,23 +71,30 @@ func call() {
 		return
 	}
 
-	cli := transport.New()
+	cli := transport.New(
+		transport.WithLogger(zap.StdLogger))
+	if err != nil {
+		return
+	}
 
 	ticker := time.NewTicker(time.Second)
 	for range ticker.C {
-		resp := &client.Response{
+		resp := &client.DataResponse{
 			Body:  new(map[string]interface{}),
 			Codec: jsonCodec.JSONCodec{},
 		}
 
 		h := http.Header{}
 		h.Set("Content-Type", "application/json")
-		if err = cli.Send(context.TODO(), &client.DefaultRequest{
+		q := url.Values{}
+		q.Add("test", "test")
+		if err = cli.Send(logger.InitFieldsContainer(context.TODO()), &client.DefaultRequest{
 			ServiceName: "test",
 			Path:        uri,
 			Method:      http.MethodGet,
 			Codec:       jsonCodec.JSONCodec{},
 			Header:      h,
+			Query:       q,
 		}, resp); err != nil {
 			log.Fatal(err)
 		}

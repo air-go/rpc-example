@@ -44,6 +44,12 @@ func Load() (err error) {
 	if err = loadClientHTTP(); err != nil {
 		return
 	}
+
+	if err = load.LoadGlobPattern("services", "toml", resource.Etcd); err != nil {
+		return
+	}
+
+	return
 	if err = loadMysql("test_mysql"); err != nil {
 		return
 	}
@@ -69,9 +75,6 @@ func Load() (err error) {
 		return
 	}
 	if err = loadRegistry(); err != nil {
-		return
-	}
-	if err = load.LoadGlobPattern("services", "toml", resource.Etcd); err != nil {
 		return
 	}
 

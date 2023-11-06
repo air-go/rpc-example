@@ -7,7 +7,6 @@ import (
 
 	"github.com/air-go/rpc/bootstrap"
 	"github.com/air-go/rpc/library/app"
-	jobLib "github.com/air-go/rpc/library/job"
 	httpPrometheus "github.com/air-go/rpc/library/prometheus/http"
 	httpServer "github.com/air-go/rpc/server/http"
 	logMiddleware "github.com/air-go/rpc/server/http/middleware/log"
@@ -32,12 +31,6 @@ func main() {
 
 	if err = bootstrap.Init("conf/"+*env, loader.Load); err != nil {
 		log.Printf("bootstrap.Init err %s", err.Error())
-		return
-	}
-
-	if *job != "" {
-		jobLib.Handlers = map[string]jobLib.HandleFunc{}
-		jobLib.Handle(*job, resource.ServiceLogger)
 		return
 	}
 

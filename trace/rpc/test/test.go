@@ -16,7 +16,7 @@ const (
 	serviceName = "rpc-example"
 )
 
-func RPC(ctx context.Context) (resp *httpClient.Response, err error) {
+func RPC(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
 	q.Add("logid", logger.ValueLogID(ctx))
 	req := &httpClient.DefaultRequest{
@@ -28,7 +28,7 @@ func RPC(ctx context.Context) (resp *httpClient.Response, err error) {
 		Body:        map[string]interface{}{"rpc": "rpc"},
 		Codec:       jsonCodec.JSONCodec{},
 	}
-	resp = &httpClient.Response{
+	resp = &httpClient.DataResponse{
 		Body:  new(map[string]interface{}),
 		Codec: jsonCodec.JSONCodec{},
 	}
@@ -40,7 +40,7 @@ func RPC(ctx context.Context) (resp *httpClient.Response, err error) {
 	return
 }
 
-func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
+func RPC1(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
 	q.Add("logid", logger.ValueLogID(ctx))
 	req := &httpClient.DefaultRequest{
@@ -53,7 +53,7 @@ func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
 		Codec:       jsonCodec.JSONCodec{},
 	}
 
-	resp = &httpClient.Response{
+	resp = &httpClient.DataResponse{
 		Body:  new(map[string]interface{}),
 		Codec: jsonCodec.JSONCodec{},
 	}
@@ -65,7 +65,7 @@ func RPC1(ctx context.Context) (resp *httpClient.Response, err error) {
 	return
 }
 
-func Ping(ctx context.Context) (resp *httpClient.Response, err error) {
+func Ping(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
 	q.Add("logid", logger.ValueLogID(ctx))
 	req := &httpClient.DefaultRequest{
@@ -78,7 +78,7 @@ func Ping(ctx context.Context) (resp *httpClient.Response, err error) {
 		Codec:       jsonCodec.JSONCodec{},
 	}
 
-	resp = &httpClient.Response{
+	resp = &httpClient.DataResponse{
 		Body:  new(map[string]interface{}),
 		Codec: jsonCodec.JSONCodec{},
 	}
