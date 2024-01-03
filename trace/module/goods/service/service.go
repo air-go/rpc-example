@@ -9,8 +9,8 @@ import (
 	"github.com/why444216978/go-util/assert"
 	"github.com/why444216978/go-util/orm"
 
-	"github.com/air-go/go-air-example/trace/module/goods/respository"
-	"github.com/air-go/go-air-example/trace/resource"
+	"github.com/air-go/rpc-example/trace/module/goods/respository"
+	"github.com/air-go/rpc-example/trace/resource"
 )
 
 type GoodsInterface interface {
@@ -63,6 +63,7 @@ func (gs *GoodsService) CrudGoods(ctx context.Context) (goods respository.Test, 
 	}
 
 	_, err = orm.Insert(ctx, db, &respository.Test{
+		ID:      333,
 		GoodsID: 333,
 		Name:    "a",
 	})

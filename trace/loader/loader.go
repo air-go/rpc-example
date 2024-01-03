@@ -1,13 +1,10 @@
 package loader
 
 import (
+	"context"
 	"strings"
+	"time"
 
-	"github.com/pkg/errors"
-	"github.com/why444216978/go-util/assert"
-	"github.com/why444216978/go-util/sys"
-
-	"github.com/air-go/go-air-example/trace/resource"
 	httpClient "github.com/air-go/rpc/client/http"
 	"github.com/air-go/rpc/client/http/transport"
 	"github.com/air-go/rpc/library/app"
@@ -15,6 +12,7 @@ import (
 	"github.com/air-go/rpc/library/config"
 	"github.com/air-go/rpc/library/etcd"
 	redisLock "github.com/air-go/rpc/library/lock/redis"
+	"github.com/air-go/rpc/library/logger"
 	loggerGorm "github.com/air-go/rpc/library/logger/zap/gorm"
 	loggerRedis "github.com/air-go/rpc/library/logger/zap/redis"
 	loggerRPC "github.com/air-go/rpc/library/logger/zap/rpc"
@@ -30,17 +28,29 @@ import (
 	etcdRegistry "github.com/air-go/rpc/library/registry/etcd"
 	"github.com/air-go/rpc/library/servicer/load"
 	"github.com/air-go/rpc/server"
+	"github.com/pkg/errors"
+	"github.com/why444216978/go-util/assert"
+	"github.com/why444216978/go-util/nopanic"
+	"github.com/why444216978/go-util/sys"
+
+	"github.com/air-go/rpc-example/trace/resource"
 )
 
 // Load load resource
 func Load() (err error) {
 	// TODO
-	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	_ = cancel
 
 	if err = loadLogger(); err != nil {
 		return
 	}
+	nopanic.RegisterRecoverCallback(func(re nopanic.RecoverData) {
+		resource.ServiceLogger.DPanic(ctx, "recoverPanic",
+			logger.Error(re.StackError.Error()),
+			logger.Stack(re.StackError.Stack()))
+	})
+
 	if err = loadClientHTTP(); err != nil {
 		return
 	}
@@ -49,25 +59,34 @@ func Load() (err error) {
 		return
 	}
 
+	if err = loadOpentelemetry(); err != nil {
+		return
+	}
+
 	return
+
+	// if err = loadJaeger(); err != nil {
+	// 	return
+	// }
+
+	startMemDB()
+
 	if err = loadMysql("test_mysql"); err != nil {
 		return
 	}
 	if err = loadRedis("default_redis"); err != nil {
 		return
 	}
-	if err = loadJaeger(); err != nil {
-		return
-	}
-	if err = loadOpentelemetry(); err != nil {
-		return
-	}
+
 	if err = loadLock(); err != nil {
 		return
 	}
 	if err = loadCache(); err != nil {
 		return
 	}
+
+	return
+
 	if err = loadRabbitMQ("default_rabbitmq"); err != nil {
 		return
 	}
@@ -268,11 +287,12 @@ func loadClientHTTP() (err error) {
 
 	resource.ClientHTTP = transport.New(
 		transport.WithLogger(logger),
-		// transport.WithBeforePlugins(&httpClient.OpentracingBeforePlugin{}),
-		transport.WithBeforePlugins(&httpClient.OpentelemetryBeforePlugin{}))
-	if err != nil {
-		return
-	}
+		transport.WithBeforePlugins([]httpClient.BeforeRequestPlugin{
+			// &httpClient.LogBeforePlugin{},
+			// &httpClient.TimeoutBeforePlugin{},
+			// &httpClient.OpentracingBeforePlugin{},
+			&httpClient.OpentelemetryBeforePlugin{},
+		}...))
 
 	return
 }

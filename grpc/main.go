@@ -15,7 +15,7 @@ import (
 	h2c "github.com/air-go/rpc/server/grpc/h2c"
 	"google.golang.org/grpc"
 
-	pb "github.com/air-go/go-air-example/grpc/helloworld"
+	pb "github.com/air-go/rpc-example/grpc/helloworld"
 )
 
 const endpoint = ":8777"

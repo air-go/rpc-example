@@ -7,9 +7,8 @@ import (
 
 	jsonCodec "github.com/why444216978/codec/json"
 
-	"github.com/air-go/go-air-example/trace/resource"
+	"github.com/air-go/rpc-example/trace/resource"
 	httpClient "github.com/air-go/rpc/client/http"
-	"github.com/air-go/rpc/library/logger"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 
 func RPC(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
-	q.Add("logid", logger.ValueLogID(ctx))
+	q.Add("data", "data")
 	req := &httpClient.DefaultRequest{
 		ServiceName: serviceName,
 		Path:        "/test/rpc1",
@@ -42,7 +41,7 @@ func RPC(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 
 func RPC1(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
-	q.Add("logid", logger.ValueLogID(ctx))
+	q.Add("data", "data")
 	req := &httpClient.DefaultRequest{
 		ServiceName: serviceName,
 		Path:        "/test/conn",
@@ -67,7 +66,7 @@ func RPC1(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 
 func Ping(ctx context.Context) (resp *httpClient.DataResponse, err error) {
 	q := url.Values{}
-	q.Add("logid", logger.ValueLogID(ctx))
+	q.Add("data", "data")
 	req := &httpClient.DefaultRequest{
 		ServiceName: serviceName,
 		Path:        "/ping",

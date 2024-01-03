@@ -5,15 +5,14 @@ import (
 	"errors"
 	"time"
 
+	"github.com/air-go/rpc/server/http/response"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"golang.org/x/sync/errgroup"
+	"github.com/why444216978/go-util/nopanic"
 
-	"github.com/air-go/go-air-example/trace/module/goods/respository"
-	goodsService "github.com/air-go/go-air-example/trace/module/goods/service"
-	"github.com/air-go/go-air-example/trace/resource"
-	"github.com/air-go/go-air-example/trace/response"
-	httpResponse "github.com/air-go/rpc/server/http/response"
+	"github.com/air-go/rpc-example/trace/module/goods/respository"
+	goodsService "github.com/air-go/rpc-example/trace/module/goods/service"
+	"github.com/air-go/rpc-example/trace/resource"
 )
 
 func Do(c *gin.Context) {
@@ -27,13 +26,13 @@ func Do(c *gin.Context) {
 	goods, err = goodsService.Instance.CrudGoods(ctx)
 	if err != nil {
 		resource.ServiceLogger.Error(ctx, err.Error())
-		response.ResponseJSON(c, response.CodeServer, goods, httpResponse.WrapToast(err, err.Error()))
+		response.ResponseJSON(c, response.ErrnoServer, goods, response.WrapToast(err.Error()))
 		return
 	}
 
 	data := &Data{}
 
-	g, _ := errgroup.WithContext(ctx)
+	g := nopanic.New(ctx)
 	g.Go(func() (err error) {
 		goods.Name = "golang"
 		_, err = goodsService.Instance.GetGoodsName(ctx, 1)
@@ -55,11 +54,11 @@ func Do(c *gin.Context) {
 	err = g.Wait()
 	if err != nil {
 		resource.ServiceLogger.Error(ctx, err.Error())
-		response.ResponseJSON(c, response.CodeServer, goods, httpResponse.WrapToast(err, err.Error()))
+		response.ResponseJSON(c, response.ErrnoServer, goods, response.WrapToast(err.Error()))
 		return
 	}
 
-	response.ResponseJSON(c, response.CodeSuccess, goods, nil)
+	response.ResponseJSON(c, response.ErrnoSuccess, goods)
 }
 
 type Data struct {

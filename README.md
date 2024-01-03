@@ -113,12 +113,12 @@ $go run main.go -env dev
 [GIN-debug] GET    /debug/pprof/heap         --> github.com/gin-contrib/pprof.pprofHandler.func1 (1 handlers)
 [GIN-debug] GET    /debug/pprof/mutex        --> github.com/gin-contrib/pprof.pprofHandler.func1 (1 handlers)
 [GIN-debug] GET    /debug/pprof/threadcreate --> github.com/gin-contrib/pprof.pprofHandler.func1 (1 handlers)
-[GIN-debug] GET    /ping                     --> github.com/air-go/go-air-example/trace/module/ping/api.Ping (4 handlers)
-[GIN-debug] GET    /ping/rpc                 --> github.com/air-go/go-air-example/trace/module/ping/api.RPC (4 handlers)
-[GIN-debug] POST   /test/rpc                 --> github.com/air-go/go-air-example/trace/module/test/api.RPC (4 handlers)
-[GIN-debug] POST   /test/rpc1                --> github.com/air-go/go-air-example/trace/module/test/api.RPC1 (4 handlers)
-[GIN-debug] POST   /test/panic               --> github.com/air-go/go-air-example/trace/module/test/api.Panic (4 handlers)
-[GIN-debug] POST   /test/conn                --> github.com/air-go/go-air-example/trace/module/goods/api.Do (4 handlers)
+[GIN-debug] GET    /ping                     --> github.com/air-go/rpc-example/trace/module/ping/api.Ping (4 handlers)
+[GIN-debug] GET    /ping/rpc                 --> github.com/air-go/rpc-example/trace/module/ping/api.RPC (4 handlers)
+[GIN-debug] POST   /test/rpc                 --> github.com/air-go/rpc-example/trace/module/test/api.RPC (4 handlers)
+[GIN-debug] POST   /test/rpc1                --> github.com/air-go/rpc-example/trace/module/test/api.RPC1 (4 handlers)
+[GIN-debug] POST   /test/panic               --> github.com/air-go/rpc-example/trace/module/test/api.Panic (4 handlers)
+[GIN-debug] POST   /test/conn                --> github.com/air-go/rpc-example/trace/module/goods/api.Do (4 handlers)
 watching prefix:rpc-example now...
 service rpc-example  put key: rpc-example.192.168.1.104.8777 val: {"Host":"192.168.1.104","Port":8777}
 

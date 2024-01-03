@@ -11,25 +11,21 @@ import (
 	httpServer "github.com/air-go/rpc/server/http"
 	logMiddleware "github.com/air-go/rpc/server/http/middleware/log"
 	panicMiddleware "github.com/air-go/rpc/server/http/middleware/panic"
+	responseMiddleware "github.com/air-go/rpc/server/http/middleware/response"
 	timeoutMiddleware "github.com/air-go/rpc/server/http/middleware/timeout"
 	traceMiddleware "github.com/air-go/rpc/server/http/middleware/trace"
 
-	"github.com/air-go/go-air-example/trace/loader"
-	"github.com/air-go/go-air-example/trace/resource"
-	"github.com/air-go/go-air-example/trace/router"
+	"github.com/air-go/rpc-example/trace/loader"
+	"github.com/air-go/rpc-example/trace/resource"
+	"github.com/air-go/rpc-example/trace/router"
 )
 
-var (
-	env = flag.String("env", "dev", "config path")
-	job = flag.String("job", "", "is job")
-)
+var env = flag.String("env", "dev", "config path")
 
 func main() {
 	flag.Parse()
 
-	var err error
-
-	if err = bootstrap.Init("conf/"+*env, loader.Load); err != nil {
+	if err := bootstrap.Init("conf/"+*env, loader.Load); err != nil {
 		log.Printf("bootstrap.Init err %s", err.Error())
 		return
 	}
@@ -44,6 +40,7 @@ func main() {
 			traceMiddleware.OpentelemetryMiddleware(),
 			logMiddleware.LoggerMiddleware(resource.ServiceLogger),
 			httpPrometheus.HTTPMetricsMiddleware(),
+			responseMiddleware.ResponseMiddleware(),
 		),
 		httpServer.WithPprof(app.Pprof()),
 		httpServer.WithDebug(app.Debug()),
